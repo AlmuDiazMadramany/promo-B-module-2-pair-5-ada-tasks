@@ -1,41 +1,36 @@
-const tasks = [
-    { name: "Recoger setas en el campo", completed: true, id: 1 },
-    { name: "Comprar pilas", completed: true, id: 2 },
-    { name: "Poner una lavadora de blancos", completed: true, id: 3 },
-    { name: "Aprender cómo se realizan las peticiones al servidor en JavaScript", completed: false, id: 4,},
-  ];
-
 
 const taskList = document.querySelector (".js-tasklist")
 const searchBtn = document.querySelector('.js-btn-filter');
 const searchInput = document.querySelector('.js-text-task-filter');
 
-function renderTask(){
-        taskList.innerHTML="";
+let tasks = [];
+const GITHUB_USER = "AlmuDiazMadramany";
+const SERVER_URL = `https://dev.adalab.es/api/todo/${GITHUB_USER}`;
 
-        for (const eachTask of tasks) {
-            const isChecked = eachTask.completed ? "checked" : ""; 
-            const isTachado = eachTask.completed ? "tachado" : "";
-
-            taskList.innerHTML += ` <li class="${isTachado}"> <input type="checkbox" id="task-${eachTask.id}" ${isChecked} data-id="${eachTask.id}"> <label for="task-${eachTask.id}">${eachTask.name}</label> </li>`;
-
-            //     if (eachTask.completed === true){
-            //         taskList.innerHTML += `<li class ="tachado"><input type="checkbox" id="${eachTask.id}"> ${eachTask.name} </li>`
-            //     } else {
-            //         taskList.innerHTML += `<li><input type="checkbox"> ${eachTask.name} </li>`
-            //     }
-             }
-
-        addCheckboxListeners(); 
-    
+// TAREAS PINTADAS EN HTML DESDE EL SERVIDOR
+fetch (SERVER_URL)
+.then ((resp) => resp.json())
+.then((data) =>{
+    console.log (data)
+    tasks=data.results;
+    taskList.innerHTML = "";
+    for (const task of tasks) {
+        const isChecked = task.completed ? "checked" : ""; 
+        const isTachado = task.completed ? "tachado" : "";
+        taskList.innerHTML+= `<li class="${isTachado}"> <input type="checkbox" class ="js-checkbox" id="task-${task.id}" ${isChecked} data-id="${task.id}"> <label for="task-${task.id}">${task.name}</label></li>`
     }
+    addCheckboxListeners()
+    })
 
-// Añadir eventos a los checkboxes después de renderizar 
+const checkbox = docuemnt.querySelector (".js-checkbox")
+//function addCheckboxListeners
 
-function addCheckboxListeners() {
+//checkbox.addEventListener ("click", addCheckboxListeners)
+
+/*function addCheckboxListeners() {
 const checkboxes = document.querySelectorAll("input[type='checkbox']"); 
 checkboxes.forEach((checkbox) => { 
-    checkbox.addEventListener("change", (event) => { 
+    checkbox.addEventListener("click", (event) => { 
         const taskId = parseInt(event.target.dataset.id); 
 
         for (let i = 0; i < tasks.length; i++) { 
@@ -44,7 +39,7 @@ checkboxes.forEach((checkbox) => {
                 break;
             } 
         } 
-        renderTask();
+     
 
     }); 
 }); 
@@ -52,19 +47,21 @@ checkboxes.forEach((checkbox) => {
 } 
 
 
-renderSearch(list) {
+/*renderSearch(list){
     for (const element of list) {
         taskList.innerHTML += `<li> ${element.name} </li>`
     }
-}
+    }
+*/
 
-
-function handleChange () {
+/*function handleChange () {
     const searchValue = searchInput.value;
     const filterTasks = tasks.filter((task) => task.name.toLowerCase() === searchValue);
     renderSearch(filterTasks);
 }
 
-renderTask();
+
     
 searchBtn.addEventListener('change', handleChange);
+
+*/
