@@ -2,10 +2,15 @@
 const taskList = document.querySelector (".js-tasklist")
 const searchBtn = document.querySelector('.js-btn-filter');
 const searchInput = document.querySelector('.js-text-task-filter');
+const newTaskInput = document.querySelector('.js-text-task-add');
+const addBtn = document.querySelector('.js-btn-add');
+
 
 let tasks = [];
+
 const GITHUB_USER = "AlmuDiazMadramany";
 const SERVER_URL = `https://dev.adalab.es/api/todo/${GITHUB_USER}`;
+
 
 // TAREAS PINTADAS EN HTML DESDE EL SERVIDOR
 fetch (SERVER_URL)
@@ -15,53 +20,46 @@ fetch (SERVER_URL)
     tasks=data.results;
     taskList.innerHTML = "";
     for (const task of tasks) {
-        const isChecked = task.completed ? "checked" : ""; 
-        const isTachado = task.completed ? "tachado" : "";
-        taskList.innerHTML+= `<li class="${isTachado}"> <input type="checkbox" class ="js-checkbox" id="task-${task.id}" ${isChecked} data-id="${task.id}"> <label for="task-${task.id}">${task.name}</label></li>`
+        if(task.completed){
+            taskList.innerHTML += `<li class="tachado"><input type="checkbox" checked id="${task.id}">${task.name}</li>`
+        } else {
+            taskList.innerHTML += `<li><input type="checkbox" id="${task.id}">${task.name}</li>`
+        }
     }
-    addCheckboxListeners()
-    })
-
-const checkbox = docuemnt.querySelector (".js-checkbox")
-//function addCheckboxListeners
-
-//checkbox.addEventListener ("click", addCheckboxListeners)
-
-/*function addCheckboxListeners() {
-const checkboxes = document.querySelectorAll("input[type='checkbox']"); 
-checkboxes.forEach((checkbox) => { 
-    checkbox.addEventListener("click", (event) => { 
-        const taskId = parseInt(event.target.dataset.id); 
-
-        for (let i = 0; i < tasks.length; i++) { 
-            if (tasks[i].id === taskId) { 
-                tasks[i].completed = event.target.checked;
-                break;
-            } 
-        } 
-     
-
-    }); 
-}); 
-
-} 
+})
 
 
-/*renderSearch(list){
-    for (const element of list) {
-        taskList.innerHTML += `<li> ${element.name} </li>`
+const handleClickList = (event) => {
+    const taskId = parseInt(event.target.id); 
+    if (!taskId) return; 
+
+    for (const task of tasks) {
+
     }
-    }
-*/
+    
+  
+    // Busca la tarea que tenga el id `taskId` en el array `tasks`. O sea ver que numero de id corresponde al checkbox que se ha marcado, y a esa tarea añadirle completed.
+    // Una vez que has obtenido la tarea, actualiza la propiedad `completed`
+    // Pinta de nuevo las tareas en el html
+  };
+  
+  list.addEventListener("click", handleClickList);
 
-/*function handleChange () {
-    const searchValue = searchInput.value;
-    const filterTasks = tasks.filter((task) => task.name.toLowerCase() === searchValue);
-    renderSearch(filterTasks);
+taskList.addEventListener('click', handleClickList);
+
+function newTaskAdded(){
+    const taskAdded = {
+        name: newTaskInput.value,
+    };
+    taskList.innerHTML += taskAdded;
+}
+
+function handleClick(event) {
+    event.preventDefault();
+    newTaskAdded();
 }
 
 
-    
-searchBtn.addEventListener('change', handleChange);
+addBtn.addEventListener('click', handleClick);
 
-*/
+
