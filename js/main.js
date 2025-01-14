@@ -36,7 +36,7 @@ fetch (SERVER_URL)
 
 // BOTON CLICK EN EL LISTADO
 const handleClickList = (event) => {
-    const taskId = parseInt(event.target.id);  // Obtenemos el id del checkbos clicado
+    const taskId = parseInt(event.target.id);  // Obtenemos el id del checkbox clicado
     if (!taskId) return; 
      const task = tasks.find ((t) => t.id === taskId); // Busca la tarea en el array
      if (task){
@@ -48,28 +48,84 @@ const handleClickList = (event) => {
 taskList.addEventListener("click", handleClickList);
 
 
-// --> FILTRAR TAREAS -- NOS QUEDAMOS AQUÍ
+// --> FILTRAR TAREAS 
+
+function renderFilteredTasks (array) {
+  taskList.innerHTML = ""; // Limpiar la lista actual
+  for (const task of array) {
+    if (task.completed) {
+      taskList.innerHTML += `<li class="tachado"><input type="checkbox" checked id="${task.id}">${task.name}</li>`;
+    } else {
+      taskList.innerHTML += `<li><input type="checkbox" id="${task.id}">${task.name}</li>`;
+    }
+  }
+}
+
 const handleSearchBtn =(ev) =>{
     ev.preventDefault (); // para que no refresque la página
-    const searchValue = searchInput.value; // obtenemos el value y lo pasamos todo a texto con minusculas. 
-    const filterTasks = tasks.filter ((task) => task.name.includes (searchValue)) // Filtra las tareas que tengan solo el texto mostrado y pintamos solo esas tareas: 
-    renderTasks (filterTasks);
-}
-searchBtn.addEventListener ("click", handleSearchBtn);
+    const searchValue = searchInput.value.toLowerCase().trim(); // Convertir a minúsculas y eliminar espacios
+    // Filtrar las tareas que incluyan el texto buscado
+    const filteredTasks = tasks.filter(task => task.name.toLowerCase().includes(searchValue));
+    // Volver a pintar las tareas con el listado filtrado
+    renderFilteredTasks(filteredTasks);
+    console.log(filteredTasks);
+};
 
+// Asociar el evento de clic al botón de buscar
+searchBtn.addEventListener("click", handleSearchBtn);
+
+
+// AGREGAR UNA NUEVA TAREA
 function newTaskAdded(){
     const taskAdded = {
+        id: tasks.length +1,
         name: newTaskInput.value,
+        completed: false, 
     };
-    taskList.innerHTML += taskAdded;
-}
+    tasks.push(taskAdded);
+    renderTasks ();
+    newTaskInput.value= "";
+    };
 
 function handleClick(event) {
     event.preventDefault();
     newTaskAdded();
 }
 
-
 addBtn.addEventListener('click', handleClick);
 
+taskList.addEventListener('click', (event) => {
+  if (event.target.type === 'checkbox') {
+    const taskId = parseInt(event.target.id);
+    const task = tasks.find(t => t.id === taskId);
+    
+    if (task) {
+      task.completed = event.target.checked; // Actualizar el estado de la tarea
+      // Actualizar la visualización de la tarea (tachado si está completada)
+      event.target.parentElement.style.textDecoration = task.completed ? 'line-through' : 'none';
+    }
+  }
+});
 
+
+// GUARDAR LISTA DE TAREAS EN EL SERVIDOR
+
+const tasksLocalStorage = JSON.parse(localStorage.getItem("tasks"));
+
+if (tasksLocalStorage === null) {
+   localStorage.setItem ("tasklocalStorage", JSON.stringify(tasksLocalStorage));
+   taskList.innerHTML += tasksLocalStorage
+} else {
+  
+  //sino existe el listado de tareas en el local storage
+  // pide los datos al servidor
+  fetch(SERVER_URL)
+    .then((response) => response.json())
+    .then((data) => {
+      localStorage.getItem 
+      taskList.innerHTML += tasksLocalStorage
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
